@@ -44,7 +44,7 @@ class MainHandler(webapp2.RequestHandler):
 
     def post(self):
     	user_text = self.request.get('text')
-    	logging.info("value of text is %t", user_text)
+    	logging.info("value of text is %s", user_text)
     	text = escape_html(user_text)
     	self.write_form("", text)
 
