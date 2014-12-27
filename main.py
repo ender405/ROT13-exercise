@@ -16,24 +16,17 @@
 #
 import webapp2
 from validation import valid_month, valid_day, valid_year, escape_html
+import logging
 
 
 form = """
 <form method="post">
-	What is your birthday?
+	<h1>Enter text to ROT13</h1>
 	<br>
 	<label>
-		Month
-		<input type="text" name="month" value="%(month)s">
+		<textarea name="text" rows=5 cols=35 value="%(text)s"></textarea>
 	</label>
-	<label>
-		Day
-		<input type="text" name="day" value="%(day)s">
-	</label>
-	<label>
-		Year
-		<input type="text" name="year" value="%(year)s">
-	</label>
+
 	<div style="color: red">%(error)s</div>	
 	<br>
 	<br>
@@ -43,33 +36,20 @@ form = """
 
 class MainHandler(webapp2.RequestHandler):
     
-    def write_form(self, error="", month="",day="",year=""):
-    	self.response.out.write(form % {"error" : error, "month" : escape_html(month), "day" : escape_html(day), "year" : escape_html(year)})
+    def write_form(self, error="", text=""):
+    	self.response.out.write(form % {"error" : error, "text" : escape_html(text)})
 
     def get(self):
-#        self.response.headers['Content-type'] = 'text/plain'
         self.write_form()
+        print("working")
 
     def post(self):
+    	user_text = self.request.get('text')
+    	logging.info	("value of text is %t", user_text)
+    	text = escape_html(user_text)
+    	self.write_form("", text)
 
-    	user_month = self.request.get('month')
-    	user_day = self.request.get('day')
-    	user_year = self.request.get('year')
-
-    	month = valid_month(user_month)
-    	day = valid_day(user_day)
-    	year = valid_year(user_year)
-
-    	if not (month and day and year):
-    		self.write_form("That doesn't look valid to me, friend", user_month, user_day, user_year)
-    	else:
-    		self.redirect("/thanks")
-
-class ThanksHandler(webapp2.RequestHandler):
-	def get(self):
-		self.response.out.write("Thanks! That's a totally valid birthday!")
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler),
-    ('/thanks', ThanksHandler)
+    ('/', MainHandler)
 ], debug=True)
