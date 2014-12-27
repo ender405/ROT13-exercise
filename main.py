@@ -17,6 +17,7 @@
 import webapp2
 from validation import valid_month, valid_day, valid_year, escape_html
 import logging
+from encrypt import scramble
 
 
 form = """
@@ -24,7 +25,7 @@ form = """
 	<h1>Enter text to ROT13</h1>
 	<br>
 	<label>
-		<textarea name="text" rows=5 cols=35 value="%(text)s"></textarea>
+		<textarea name="text" rows=5 cols=35>%(text)s</textarea>
 	</label>
 
 	<div style="color: red">%(error)s</div>	
@@ -45,8 +46,7 @@ class MainHandler(webapp2.RequestHandler):
     def post(self):
     	user_text = self.request.get('text')
     	logging.info("value of text is %s", user_text)
-    	text = escape_html(user_text)
-    	self.write_form("", text)
+    	self.write_form("Did it work?", scramble(user_text))
 
 
 app = webapp2.WSGIApplication([
